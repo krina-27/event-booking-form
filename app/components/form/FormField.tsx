@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 
 type Props = {
   label: string;
-  error?: string;
+  error?: string | undefined;
   children: React.ReactNode;
 };
 
