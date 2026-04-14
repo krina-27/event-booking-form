@@ -4,14 +4,25 @@ import { cn } from "@/lib/utils";
 
 type Props = {
   label: string;
+  isRequired?: boolean | undefined;
   error?: string | undefined;
+  className?: string | undefined;
   children: React.ReactNode;
 };
 
-export const FormField = ({ label, error, children }: Props) => {
+export const FormField = ({
+  label,
+  isRequired,
+  error,
+  className,
+  children,
+}: Props) => {
   return (
-    <div className="space-y-2">
-      <Label className={cn(error && "text-red-500")}>{label}</Label>
+    <div className={cn("space-y-2", className)}>
+      <Label className={cn("inline-flex items-center", error && "text-red-500")}>
+        {label}
+        {isRequired ? <span className="ml-1 text-red-500">*</span> : null}
+      </Label>
 
       {children}
 
