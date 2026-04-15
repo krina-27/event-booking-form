@@ -3,17 +3,14 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FormRenderer } from "@/app/components/form/FormRenderer";
+import { getDefaultValues } from "@/lib/form-defaults";
 
 import { eventFormDefinition } from "./eventFormDefinition";
 import { type EventFormData, type EventFormInput } from "./eventForm.schema";
 
-const defaultValues: EventFormInput = {
-  eventName: "",
-  eventType: undefined,
-  startDate: "",
-  endDate: "",
-  guests: "",
-};
+const defaultValues = getDefaultValues<EventFormInput>(
+  eventFormDefinition.fields,
+);
 
 export default function EventForm() {
   const onSubmit = async (values: EventFormData) => {

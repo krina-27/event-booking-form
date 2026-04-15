@@ -1,15 +1,10 @@
 "use client";
 
-import type {
-  Control,
-  FieldErrors,
-  FieldValues,
-  Path,
-  UseFormRegister,
-} from "react-hook-form";
-import { Controller } from "react-hook-form";
+import type { Path } from "react-hook-form";
+import { Controller, useFormContext } from "react-hook-form";
 
 import type { EventFieldSchema } from "@/app/forms/event/eventFormDefinition";
+import type { EventFormInput } from "@/app/forms/event/eventForm.schema";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -18,25 +13,23 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { getFieldError } from "@/lib/form-errors";
 
 import { FormField } from "./FormField";
 
-type Props<TFormValues extends FieldValues> = {
+type Props = {
   field: EventFieldSchema;
-  register: UseFormRegister<TFormValues>;
-  control: Control<TFormValues>;
-  errors: FieldErrors<TFormValues>;
 };
 
-export function FormRendererField<TFormValues extends FieldValues>({
-  field,
-  register,
-  control,
-  errors,
-}: Props<TFormValues>) {
-  const error = errors[field.name as Path<TFormValues>]?.message as
-    | string
-    | undefined;
+export function FormRendererField({ field }: Props) {
+  const {
+    register,
+    control,
+    formState: { errors },
+  } = useFormContext<EventFormInput>();
+
+  const fieldName = field.name as Path<EventFormInput>;
+  const error = getFieldError(errors, fieldName);
 
   if (field.component === "TEXT_FIELD") {
     return (
@@ -45,7 +38,7 @@ export function FormRendererField<TFormValues extends FieldValues>({
           type={field.inputType ?? "text"}
           placeholder={field.placeholder}
           aria-invalid={Boolean(error)}
-          {...register(field.name as Path<TFormValues>)}
+          {...register(fieldName)}
         />
       </FormField>
     );
@@ -57,7 +50,7 @@ export function FormRendererField<TFormValues extends FieldValues>({
         <Input
           type="date"
           aria-invalid={Boolean(error)}
-          {...register(field.name as Path<TFormValues>)}
+          {...register(fieldName)}
         />
       </FormField>
     );
@@ -67,7 +60,7 @@ export function FormRendererField<TFormValues extends FieldValues>({
     <FormField label={field.label} isRequired={field.isRequired} error={error}>
       <Controller
         control={control}
-        name={field.name as Path<TFormValues>}
+        name={fieldName}
         render={({ field: controllerField }) => (
           <Select
             value={(controllerField.value as string | undefined) ?? ""}

@@ -1,8 +1,8 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { SubmitHandler } from "react-hook-form";
-import { useForm } from "react-hook-form";
+import type { DefaultValues, SubmitHandler } from "react-hook-form";
+import { useForm, FormProvider } from "react-hook-form";
 
 import type { EventFieldSchema } from "@/app/forms/event/eventFormDefinition";
 import type {
@@ -17,7 +17,7 @@ import { FormRendererField } from "./FormRendererField";
 
 type Props = {
   fields: readonly EventFieldSchema[];
-  defaultValues: EventFormInput;
+  defaultValues: DefaultValues<EventFormInput>;
   onSubmit: SubmitHandler<EventFormData>;
   submitButtonLabel?: string | undefined;
   submittingButtonLabel?: string | undefined;
@@ -30,17 +30,17 @@ export function FormRenderer({
   submitButtonLabel = "Submit",
   submittingButtonLabel = "Submitting...",
 }: Props) {
-  const {
-    control,
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<EventFormInput, undefined, EventFormData>({
+
+
+  const methods = useForm<EventFormInput, undefined, EventFormData>({
     resolver: zodResolver(eventFormSchema),
     defaultValues,
   });
 
+  const {handleSubmit, formState: { isSubmitting }} = methods
+
   return (
+    <FormProvider {...methods}>
     <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
       <div className="grid gap-4 md:grid-cols-2">
         {fields.map((field) => (
@@ -50,9 +50,6 @@ export function FormRenderer({
           >
             <FormRendererField
               field={field}
-              register={register}
-              control={control}
-              errors={errors}
             />
           </div>
         ))}
@@ -62,5 +59,6 @@ export function FormRenderer({
         {isSubmitting ? submittingButtonLabel : submitButtonLabel}
       </Button>
     </form>
+    </FormProvider>
   );
 }
